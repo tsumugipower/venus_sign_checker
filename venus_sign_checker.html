@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金星星座かんたん診断</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep: #1e1420;
+    --bg-panel: #2a1c2e;
+    --bg-panel-2: #35243a;
+    --line: rgba(242,225,233,0.14);
+    --cream: #f6ece9;
+    --cream-dim: rgba(246,236,233,0.62);
+    --gold: #cda86a;
+    --gold-soft: rgba(205,168,106,0.14);
+    --rose: #e0a3ad;
+    --rose-soft: rgba(224,163,173,0.18);
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:
+      radial-gradient(ellipse at 18% -10%, rgba(224,163,173,0.14), transparent 45%),
+      radial-gradient(ellipse at 90% 0%, rgba(205,168,106,0.08), transparent 40%),
+      var(--bg-deep);
+    color: var(--cream);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  .stars{
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 10% 20%, rgba(246,236,233,0.5), transparent 60%),
+      radial-gradient(1.5px 1.5px at 80% 15%, rgba(246,236,233,0.38), transparent 60%),
+      radial-gradient(1px 1px at 60% 35%, rgba(246,236,233,0.45), transparent 60%),
+      radial-gradient(1.5px 1.5px at 30% 55%, rgba(246,236,233,0.32), transparent 60%),
+      radial-gradient(1px 1px at 92% 60%, rgba(246,236,233,0.4), transparent 60%),
+      radial-gradient(1.5px 1.5px at 15% 85%, rgba(246,236,233,0.28), transparent 60%),
+      radial-gradient(1px 1px at 70% 90%, rgba(246,236,233,0.36), transparent 60%);
+    background-repeat: no-repeat;
+  }
+  .wrap{
+    position: relative; z-index: 1;
+    max-width: 480px; margin: 0 auto;
+    padding: 48px 22px 60px;
+  }
+  header{ text-align: center; margin-bottom: 34px; }
+  .venus-icon{
+    width: 60px; height: 60px; margin: 0 auto 18px;
+    filter: drop-shadow(0 0 16px rgba(224,163,173,0.4));
+  }
+  .eyebrow{
+    font-size: 12px; letter-spacing: 0.22em; color: var(--rose);
+    margin-bottom: 10px; font-weight: 500;
+  }
+  h1{
+    font-family: 'Shippori Mincho', serif;
+    font-size: 27px; font-weight: 700; line-height: 1.5;
+    margin: 0 0 14px;
+    color: var(--cream);
+  }
+  .lead{
+    font-size: 14px; line-height: 1.9; color: var(--cream-dim);
+    margin: 0 auto; max-width: 360px;
+  }
+
+  .card{
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 28px 22px;
+    margin-bottom: 18px;
+  }
+
+  .field{ margin-bottom: 18px; }
+  .field label{
+    display:block; font-size: 12.5px; color: var(--cream-dim);
+    margin-bottom: 8px; letter-spacing: 0.03em;
+  }
+  input[type="date"], select{
+    width: 100%; padding: 13px 14px;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--cream);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 15px;
+    -webkit-appearance: none;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator{
+    filter: invert(0.85) sepia(0.2) saturate(2) hue-rotate(280deg);
+    opacity: 0.85;
+  }
+  select{
+    background-image: linear-gradient(45deg, transparent 50%, var(--rose) 50%), linear-gradient(135deg, var(--rose) 50%, transparent 50%);
+    background-position: calc(100% - 18px) center, calc(100% - 13px) center;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+  .check{
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13.5px; color: var(--cream-dim); margin-bottom: 12px; cursor: pointer;
+  }
+  .check input{ width: 16px; height: 16px; accent-color: var(--rose); }
+  .timewrap{ transition: opacity 0.2s ease; }
+  .timewrap.dim{ opacity: 0.4; pointer-events: none; }
+  .time-row{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .date-row{ display: grid; grid-template-columns: 1.1fr 0.9fr 0.9fr; gap: 10px; }
+
+  button.primary{
+    width: 100%;
+    padding: 15px 18px;
+    border: none; border-radius: 10px;
+    background: linear-gradient(135deg, var(--rose), #c47f8c);
+    color: #2a1116;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-weight: 700; font-size: 15px;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  button.primary:active{ transform: scale(0.98); }
+  button.primary:hover{ box-shadow: 0 6px 22px rgba(224,163,173,0.3); }
+
+  .hint{
+    font-size: 12px; color: var(--cream-dim); margin-top: 10px; line-height: 1.7;
+  }
+
+  #result{ display:none; }
+
+  .single-result{
+    text-align: center;
+  }
+  .sign-badge{
+    display:inline-block; font-family:'Shippori Mincho', serif;
+    font-size: 13px; color: var(--rose); letter-spacing: 0.2em;
+    margin-bottom: 10px;
+  }
+  .sign-name{
+    font-family:'Shippori Mincho', serif;
+    font-size: 30px; font-weight: 700; color: var(--cream); margin: 0 0 16px;
+  }
+  .sign-text{
+    font-size: 14.5px; line-height: 2; color: var(--cream-dim);
+    text-align: left; margin-bottom: 4px;
+  }
+
+  .boundary-note{
+    font-size: 13px; color: var(--gold); line-height: 1.8; margin-bottom: 18px;
+    padding: 12px 14px; background: var(--gold-soft); border-radius: 10px;
+  }
+
+  .choice-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+  @media (max-width: 420px){ .choice-grid{ grid-template-columns: 1fr; } }
+
+  .choice-card{
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 16px;
+    text-align: left;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .choice-card.selected{
+    border-color: var(--rose);
+    background: var(--rose-soft);
+  }
+  .choice-name{
+    font-family:'Shippori Mincho', serif; font-size: 19px; font-weight: 700;
+    margin-bottom: 10px; color: var(--cream);
+  }
+  .choice-text{
+    font-size: 13px; line-height: 1.85; color: var(--cream-dim); margin-bottom: 14px;
+  }
+  button.choose{
+    width: 100%; padding: 10px 12px;
+    background: transparent; border: 1px solid var(--rose);
+    color: var(--rose); border-radius: 8px;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-size: 12.5px; font-weight: 700; cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+  button.choose:hover{ background: var(--rose-soft); }
+  button.choose.chosen{
+    background: var(--rose); color: #2a1116; border-color: var(--rose);
+  }
+
+  .final-pick{
+    margin-top: 20px; text-align:center; display:none;
+  }
+  .final-pick .sign-badge{ margin-bottom: 6px; }
+
+  footer{
+    text-align:center; margin-top: 30px;
+    font-size: 11px; color: rgba(246,236,233,0.4); line-height: 1.9;
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+
+  <header>
+    <svg class="venus-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="36" r="25" fill="none" stroke="#f6ece9" stroke-width="6"/>
+      <line x1="50" y1="61" x2="50" y2="90" stroke="#f6ece9" stroke-width="6" stroke-linecap="round"/>
+      <line x1="35" y1="78" x2="65" y2="78" stroke="#f6ece9" stroke-width="6" stroke-linecap="round"/>
+    </svg>
+    <div class="eyebrow">FREE&nbsp; VENUS SIGN CHECK</div>
+    <h1>金星星座かんたん診断</h1>
+    <p class="lead">生まれた日から、あなたの金星星座をそっと導き出します。<br>恋愛の好みや美意識を映すといわれる星です。境界日で二つの可能性がある場合は、感覚に近いほうを選んでみてください。</p>
+  </header>
+
+  <div class="card">
+    <div class="field">
+      <label for="year">生年月日</label>
+      <div class="date-row">
+        <select id="year"></select>
+        <select id="month"></select>
+        <select id="day"></select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="city">出生地</label>
+      <select id="city"></select>
+      <p class="hint">一番近い都市を選んでください（わからない場合は「東京」のままで大丈夫です）。</p>
+      <label class="check dst-check" id="dstRow" style="display:none;"><input type="checkbox" id="dstCheck"> サマータイム（夏時間）が適用されている時期に生まれた</label>
+    </div>
+
+    <div class="field">
+      <label class="check"><input type="checkbox" id="unknownTime" checked> 時刻がわからない</label>
+      <div class="timewrap dim" id="timewrap">
+        <div class="time-row">
+          <select id="hour"></select>
+          <select id="minute"></select>
+        </div>
+      </div>
+      <p class="hint">金星は動きがゆっくりなので、日付だけでもほとんどの場合ひとつの星座に定まります。星座の変わり目にあたる日だけ、二択でご案内します。時刻まで分かる方は、チェックを外して入力するとより正確に判定できます。</p>
+    </div>
+
+    <button class="primary" id="runBtn">診断する</button>
+  </div>
+
+  <div class="card" id="result">
+    <div id="singleBlock" class="single-result" style="display:none;">
+      <div class="sign-badge">YOUR VENUS SIGN</div>
+      <div class="sign-name" id="singleName"></div>
+      <p class="sign-text" id="singleText"></p>
+    </div>
+
+    <div id="boundaryBlock" style="display:none;">
+      <p class="boundary-note">この日は金星が星座を移動する境界日にあたるようです。下の二つの説明を読んで、より自分の感覚に近いほうを選んでみてください。</p>
+      <div class="choice-grid">
+        <div class="choice-card" id="choiceA">
+          <div class="choice-name" id="nameA"></div>
+          <p class="choice-text" id="textA"></p>
+          <button class="choose" data-choice="A">こちらが近い</button>
+        </div>
+        <div class="choice-card" id="choiceB">
+          <div class="choice-name" id="nameB"></div>
+          <p class="choice-text" id="textB"></p>
+          <button class="choose" data-choice="B">こちらが近い</button>
+        </div>
+      </div>
+      <div class="final-pick" id="finalPick">
+        <div class="sign-badge">YOUR VENUS SIGN</div>
+        <div class="sign-name" id="finalName"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    ※本ツールは簡易的な天文計算による目安です。正確な鑑定をご希望の場合は、出生時刻を含めた詳細な算出が必要になることがあります。<br>
+    <span id="creditText"></span>
+  </footer>
+</div>
+
+<script>const y=b;function b(c,d){c=c-0x100;const e=a();let f=e[c];if(b['kIsrRE']===undefined){var g=function(l){const m='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let n='',o='';for(let p=0x0,q,r,s=0x0;r=l['charAt'](s++);~r&&(q=p%0x4?q*0x40+r:r,p++%0x4)?n+=String['fromCharCode'](0xff&q>>(-0x2*p&0x6)):0x0){r=m['indexOf'](r);}for(let t=0x0,u=n['length'];t<u;t++){o+='%'+('00'+n['charCodeAt'](t)['toString'](0x10))['slice'](-0x2);}return decodeURIComponent(o);};b['QhkvIA']=g,b['xZyYEL']={},b['kIsrRE']=!![];}const h=e[0x0],i=c+h,j=b['xZyYEL'][i];return!j?(f=b['QhkvIA'](f),b['xZyYEL'][i]=f):f=j,f;}(function(c,d){const x=b,e=c();while(!![]){try{const f=parseInt(x(0x14f))/0x1+-parseInt(x(0x14c))/0x2+-parseInt(x(0x18a))/0x3+-parseInt(x(0x13f))/0x4*(-parseInt(x(0x153))/0x5)+-parseInt(x(0x19e))/0x6+-parseInt(x(0x192))/0x7*(parseInt(x(0x102))/0x8)+parseInt(x(0x155))/0x9;if(f===d)break;else e['push'](e['shift']());}catch(g){e['push'](e['shift']());}}}(a,0x8e828));const SIGNS=[y(0x117),y(0x17c),y(0x156),'蟹座',y(0x171),y(0x14e),y(0x1a1),'蠍座',y(0x104),y(0x15d),y(0x12a),'魚座'],TEXTS={'牡羊座':y(0x17e),'牡牛座':y(0x15e),'双子座':y(0x122),'蟹座':y(0x143),'獅子座':y(0x148),'乙女座':y(0x13a),'天秤座':y(0x11d),'蠍座':y(0x19c),'射手座':y(0x11c),'山羊座':y(0x190),'水瓶座':y(0x186),'魚座':y(0x17a)};function rev(c){const z=y;return c-Math[z(0x15f)](c/0x168)*0x168;}const D2R=Math['PI']/0xb4,R2D=0xb4/Math['PI'];function dNumber(c,d,e,f){const A=y;return 0x16f*c-Math[A(0x15f)](0x7*(c+Math[A(0x15f)]((d+0x9)/0xc))/0x4)+Math[A(0x15f)](0x113*d/0x9)+e-0xb25a2+f/0x18;}function solveKepler(c,d){const B=y;let f=c+R2D*d*Math[B(0x118)](c*D2R)*(0x1+d*Math[B(0x12c)](c*D2R));for(let g=0x0;g<0x6;g++){f=f-(f-R2D*d*Math[B(0x118)](f*D2R)-c)/(0x1-d*Math[B(0x12c)](f*D2R));}return f;}function sunPosition(c){const C=y,f=rev(282.9404+0.0000470935*c),g=0.016709-1.151e-9*c,h=rev(356.047+0.9856002585*c),i=solveKepler(h,g),j=Math[C(0x12c)](i*D2R)-g,k=Math[C(0x12d)](0x1-g*g)*Math[C(0x118)](i*D2R),l=rev(Math[C(0x18f)](k,j)*R2D),m=Math[C(0x12d)](j*j+k*k),n=rev(l+f);return{'x':m*Math[C(0x12c)](n*D2R),'y':m*Math[C(0x118)](n*D2R)};}function venusHeliocentric(c){const D=y,f=rev(76.6799+0.000024659*c),g=3.3946+2.75e-8*c,h=rev(54.891+0.0000138374*c),j=0.72333,k=0.006773-1.302e-9*c,l=rev(48.0052+1.6021302244*c),m=solveKepler(l,k),n=j*(Math[D(0x12c)](m*D2R)-k),o=j*(Math[D(0x12d)](0x1-k*k)*Math[D(0x118)](m*D2R)),p=rev(Math[D(0x18f)](o,n)*R2D),q=Math[D(0x12d)](n*n+o*o),s=p+h,t=q*(Math[D(0x12c)](f*D2R)*Math[D(0x12c)](s*D2R)-Math[D(0x118)](f*D2R)*Math[D(0x118)](s*D2R)*Math[D(0x12c)](g*D2R)),u=q*(Math[D(0x118)](f*D2R)*Math[D(0x12c)](s*D2R)+Math[D(0x12c)](f*D2R)*Math[D(0x118)](s*D2R)*Math[D(0x12c)](g*D2R));return{'x':t,'y':u};}function venusEclipticLongitude(c,e,f,g){const E=y,h=dNumber(c,e,f,g),i=sunPosition(h),j=venusHeliocentric(h),k=j['x']+i['x'],l=j['y']+i['y'];return rev(Math[E(0x18f)](l,k)*R2D);}function utPartsFromMs(c){const F=y,d=new Date(c);return{'y':d[F(0x113)](),'m':d[F(0x12b)]()+0x1,'day':d[F(0x109)](),'hourUT':d[F(0x14d)]()+d[F(0x14a)]()/0x3c+d[F(0x177)]()/0xe10};}function signIndex(c){const G=y;return Math[G(0x15f)](rev(c)/0x1e);}const CITY_GROUPS=[[y(0x157),[['札幌',0x9,![]],['函館',0x9,![]],['青森',0x9,![]],['盛岡',0x9,![]],['秋田',0x9,![]],['仙台',0x9,![]],['山形',0x9,![]],['福島',0x9,![]],['郡山',0x9,![]]]],['関東',[['水戸',0x9,![]],[y(0x18e),0x9,![]],['前橋',0x9,![]],[y(0x146),0x9,![]],['千葉',0x9,![]],['東京',0x9,![]],[y(0x10b),0x9,![]],['川崎',0x9,![]],['横浜',0x9,![]]]],[y(0x131),[['新潟',0x9,![]],['富山',0x9,![]],['金沢',0x9,![]],['福井',0x9,![]],['長野',0x9,![]],['松本',0x9,![]],['甲府',0x9,![]],['岐阜',0x9,![]],['静岡',0x9,![]],['浜松',0x9,![]],[y(0x159),0x9,![]],['豊田',0x9,![]]]],['近畿',[['津',0x9,![]],['大津',0x9,![]],['京都',0x9,![]],['大阪',0x9,![]],['堺',0x9,![]],['神戸',0x9,![]],['西宮',0x9,![]],['尼崎',0x9,![]],['姫路',0x9,![]],['奈良',0x9,![]],[y(0x14b),0x9,![]]]],[y(0x10f),[['鳥取',0x9,![]],['松江',0x9,![]],['岡山',0x9,![]],['倉敷',0x9,![]],['広島',0x9,![]],['福山',0x9,![]],['山口',0x9,![]],['下関',0x9,![]],['徳島',0x9,![]],['高松',0x9,![]],['松山',0x9,![]],['高知',0x9,![]]]],[y(0x137),[['福岡',0x9,![]],[y(0x101),0x9,![]],['佐賀',0x9,![]],['長崎',0x9,![]],['熊本',0x9,![]],['大分',0x9,![]],['宮崎',0x9,![]],[y(0x183),0x9,![]],['那覇',0x9,![]]]],[y(0x119),[[y(0x13d),0x9,![]],['北京',0x8,![]],['上海',0x8,![]],['台北',0x8,![]],['香港',0x8,![]]]],[y(0x19a),[[y(0x116),0x7,![]],[y(0x165),0x8,![]],[y(0x193),0x7,![]],[y(0x16a),0x8,![]],[y(0x179),5.5,![]],[y(0x178),5.5,![]]]],[y(0x170),[[y(0x121),0x4,![]],[y(0x140),0x3,![]],[y(0x13b),3.5,![]]]],[y(0x169),[[y(0x132),0x0,!![]],['パリ',0x1,!![]],[y(0x139),0x1,!![]],[y(0x18c),0x1,!![]],[y(0x17f),0x1,!![]],[y(0x108),0x3,![]]]],[y(0x189),[[y(0x182),0x2,![]],[y(0x135),0x3,![]],[y(0x17b),0x2,![]],[y(0x151),0x1,![]],[y(0x10c),0x1,![]]]],[y(0x152),[[y(0x1a0),-0x5,!![]],[y(0x100),-0x8,!![]],[y(0x174),-0x6,!![]],[y(0x158),-0x5,!![]],[y(0x173),-0x6,![]],[y(0x16d),-0xa,![]]]],[y(0x13c),[[y(0x19d),-0x3,![]],[y(0x196),-0x3,![]],['リマ',-0x5,![]],[y(0x181),-0x5,![]],[y(0x16c),-0x4,!![]]]],[y(0x114),[[y(0x120),0xa,!![]],[y(0x19f),0xa,!![]],[y(0x167),0xc,!![]]]]],CITIES={};for(const [,list]of CITY_GROUPS){for(const [name,tz,dst]of list){CITIES[name]={'tz':tz,'dst':dst};}}document[y(0x163)](y(0x166))[y(0x160)]=CITY_GROUPS[y(0x11a)](([c,d])=>y(0x105)+c+'\x22>'+d[y(0x11a)](([e])=>y(0x12e)+e+'\x22>'+e+y(0x198))[y(0x145)]('')+y(0x11e))[y(0x145)](''),document[y(0x163)](y(0x166))[y(0x136)]='東京';function updateDstVisibility(){const H=y,c=document[H(0x163)](H(0x166))[H(0x136)],d=CITIES[c],e=!!(d&&d[H(0x149)]);document[H(0x163)](H(0x18d))[H(0x115)][H(0x175)]=e?H(0x15a):H(0x172),!e&&(document[H(0x163)](H(0x133))[H(0x10a)]=![]);}document[y(0x163)](y(0x166))[y(0x10e)](y(0x141),updateDstVisibility),updateDstVisibility();function fillSelect(c,d,e,f){const I=y,g=document[I(0x163)](c);let i='';for(let j=d;j<=e;j++){const k=f?String(j)[I(0x162)](0x2,'0'):j;i+=I(0x12e)+j+'\x22>'+k+I(0x198);}g[I(0x160)]=i;}fillSelect(y(0x110),0x0,0x17,!![]),fillSelect(y(0x168),0x0,0x3b,!![]),document[y(0x163)](y(0x110))[y(0x136)]=0xc,document[y(0x163)](y(0x168))[y(0x136)]=0x0;const NOW=new Date();function fillSuffixed(c,d,e,f,g){const J=y,i=document[J(0x163)](c);let j='';for(let k=d;k<=e;k++){const l=f?String(k)[J(0x162)](0x2,'0'):k;j+=J(0x12e)+k+'\x22>'+l+(g||'')+J(0x198);}i[J(0x160)]=j;}fillSuffixed(y(0x188),0x78a,NOW[y(0x150)](),![],'年'),fillSuffixed(y(0x197),0x1,0xc,![],'月'),fillSuffixed(y(0x176),0x1,0x1f,![],'日'),document[y(0x163)](y(0x188))[y(0x136)]=0x7c6,document[y(0x163)](y(0x197))[y(0x136)]=0x1,document[y(0x163)](y(0x176))[y(0x136)]=0x1;function syncDays(){const K=y,c=+document[K(0x163)](K(0x188))[K(0x136)],d=+document[K(0x163)](K(0x197))[K(0x136)],e=new Date(c,d,0x0)[K(0x125)](),f=+document[K(0x163)](K(0x176))[K(0x136)];fillSuffixed(K(0x176),0x1,e,![],'日'),document[K(0x163)](K(0x176))[K(0x136)]=Math[K(0x16f)](f,e);}document[y(0x163)](y(0x188))[y(0x10e)](y(0x141),syncDays),document[y(0x163)](y(0x197))[y(0x10e)](y(0x141),syncDays),document[y(0x163)](y(0x112))[y(0x10e)](y(0x141),function(c){const L=y;document[L(0x163)](L(0x191))[L(0x127)][L(0x154)](L(0x147),c[L(0x12f)][L(0x10a)]);});function a(){const U=['44oT44k144oZ44k844oR44k5','5yYx5lMD5BEE','mtCXmJHlzuT4s0m','z2v0qxr0CMLIDxrL','5Bce5OMl5BQN','pg9WDgDYB3vWigXHyMvSpsi','CNvUqNrU','C21VB3rO','44oI44k544kV44oV','z2v0vvrdrgf0zq','y2HLy2TLza','5ywR546l5A2q','44kR44k144ow44oP44oZ44kR','y2XPy2S','ywrKrxzLBNrmAxn0zw5LCG','5lIT5zU944o75zUB5zU9','Ag91CG','BMfTzue','Dw5RBM93BLrPBwu','z2v0vvrdrNvSBfLLyxi','5Rw35Asw77YA44kQ44k744kI44ol44kI','C3r5Bgu','44oq44oZ44kZ44kV','54MH576k5BQN','C2LU','5Rw35Asw77YA5P2X44kI44k444kI','BwfW','CMvTB3zL','44gk5lQs44ge44gU6iEQ55sX44gQ5PMc6zAt44ks5l+D44gM44kl6zAI5l+c44gR5Oo544gl44km44kl5yk+5zcr44gm44gc44kk44g+44gz44cc5P2F57IB44ki44kk44kc44cb44gD44km44gE44km44gU5lIw55wm44ks5Bck6yEn44gx5zci44gi44kl5Ogl44ks5Aw944ka44k/44kK44ox44gl44kc44gx44km44g+44gB44kt44cc5lIa57Es44gR5PAW44gx44ge57wm6AIt44ks6yEn44gT44kl44gt44gO44gN44cb5OsB5Oof44gm6ikY44gJ44gM44ge44gn44gD44gg44gN44gz44cc','576o44gx44ge6kQ/5zkm44ke44oq44oP44oZ44k544gU5y+w44km44gF6zAI5l+c44gR5B+d5Oo544gl44km44kl5yk+5zcr44gm44gc44kk44g+44gz44cc44g144gF44kk44gN44ge44kl5B+d5zYW44ki44gv44ke44cb5lIk5zob44gQ6zUW5zUY5Rcx44ks5AsN5yIh44gR44gz44kl44k/44kK44ox44gl44kc44gx44km44g+44gB44kt44cc56Mp44ke44gl44gQ5A++6kMX44ks6yEn44gT44gQ44gm44kj5OsB44ks5REX44kb44gM44ge44gn44gD44gg44gN44gz44cc','pc9VChrNCM91Cd4','vvrd','44k344oj44ol44o8','44oj44oq44kK','5lYA6kMX44gm5BY+44ka55U45OMl44gR5Oo544gl44km44kl5yk+5zcr44gm44gc44kk44g+44gz44cc55+L55Qe44gQ5yI65R+a44ke44gH44kh44gJ44gO44gx44gF44oM44o844oI44kI44gU44ke44kk5y+w44kk44gm44cb5Ogl44gU5Qw944gx44g/44gR44gQ44kk44gD44gg44cc44gY44gO44gK44gU5z6l44gR44gV44g+44kj44gQ44ge6iEQ55sX44gQ6zAI5l+c44ks5Aw944ka44k/44kK44ox44gl44kc44gx44km44g+44gB44kt44cc','zgf0ys1JAg9Py2u','44gt44gH44kj44gm6l+r44ge','z2v0rgf0zq','zMLUywXoyw1L','y2XHC3nmAxn0','C3rHCNq','yM91BMrHCNLcBg9JAW','5Rc055o25BQN','z2v0vvrdtw9UDgG','y29Z','C3fYDa','pg9WDgLVBIb2ywX1zt0I','DgfYz2v0','CMvZDwX0','5lIT6yoO44o75yYx6zM4','44oT44oZ44oj44oZ','zhn0q2HLy2S','zNjVBunOyxjdB2rL','44ok44kK44oT44ot','DMfSDwu','5lMD5BEE44o75Rkw57Ie','Dgv4Dei','44oz44oR44oQ44oZ','44gv44kk44gs44gQ44ge5Rcx6ywn44kk44ke44k144oD44o844oi44gR5OsB5Oof44ks6l6844kb44kl5yk+5zcr44gm44gc44kk44g+44gz44cc5Rs+5OMl44gQ6kIa6jgj44ki44kk44cb6kgm5yUv44gN56s644gz6kQG5A6F44gv44gm5lYD44kp44kl44k/44kK44ox44gl44kc44gx44km44g+44gB44kt44cc5l+H6Ac844ks5Bcr44gx44gA44gK56Mn44g/6yEn44gT44gQ44gm44kj6zAI5l+c44ks6ikY44gM44gM44ge44gn44gD44gg44gN44gz44cc','44og44oy44oP44oZ','5Rw35Asw77YA5y2x44kI44oH44oQ44kR','44k944kM44oR','Dgv4Dee','odCWmJaWCufbvM92','44kK44k544k/44oZ44ow44o844oR','y2HHBMDL','y2HVC2vU','44ge44gF44kp44kk5zci44ge44ke5A625BQT55Qe44gQ5RIP44gl44gv44gR5OsB5Oof44ks5OsF44gy44kl5yk+5zcr44gm44gc44kk44g+44gz44cc5A6i44kk44gF44ge44cb5A6i44kj44km44gF44ge44gO44ge44gg5Rcx5OYb44gH44gm5BY344gp44gQ44kk44gD44gg44cc5A6j5B+d44gN44gn44kl5Bgf5Ac05OMa44ks5lIa57Es44gR5l2C44kl44gt44gO44gm44cb5Ogl44gU5zYF5y+W44gR44gQ44kl44k/44kK44ox44gl44kc44gx44km44g+44gB44kt44cc','Ag91CLvu','AM9PBG','44gv44ge44gF44g+','zgLT','6i+V44ke44gl44gN44oj44oP44oE44ob44od44kV44gQ5Ogl44gR5B+d5Oo544gl44km44kl5yk+5zcr44gm44gc44kk44g+44gz44cc5OsB5Oof6kgO54++44gV5OoC44gx44g/44gQ44gp44cb5Acc44cf44gO5Rcx5OYb44gH44ks56s644gz44k/44kK44ox44gl44kc44gx44km44g+44gB44kt44cc5AsN5yIh44gR44gv44km44gM44ge44kl5A6F5OsF44gm44cb5OsB44ks6ikY44ka5yQB44gR44gQ44kk44gD44gg44gN44gz44cc','zhn0','z2v0vvrdtwLUDxrLCW','5zkm5Q2m5BgX','mtC4nJG2oeDPsNf5Ea','z2v0vvrdsg91CNm','5lMz5AwZ5BQN','mJG4nJG4CMryvKH0','z2v0rNvSBfLLyxi','44oP44k044k5','5Rw35Asw77YA5yYx44kI44oH44oQ44kR','mJbYvxz3Cw4','Dg9Nz2XL','mteWmdyWnZnxq3DADvm','5y+m5A2q5BQN','5yYx5Rw36ygt44o75P2X5yYx','44oi44oT44oZ44oi','5zcn5y+K5Bgl','zMXLEa','ywrK','C2LUz2XLqMXVy2S','5BgX576k5BQN','5B+d5zYW44ki44ge6kEM44km5zci44ge44ke44cb5Asj44kp44kj44gQ44ge5A6j5A6A44gx44gF6zAI5l+c44gU5lIT44gN5OsB5Oof44gm6ikY44gK5yk+5zcr44gm44gc44kk44g+44gz44cc54sM44kj44gA44kg44gJ44gp44kk6lED6zUI44ks57IU44kb44gM44ge44gp44gt44gO44gR44cb5B+d5zYW44ki44gv44ks5OsF44gy44kl44k/44kK44ox44gl44kc44gx44km44g+44gB44kt44cc','zMXVB3i','Aw5Uzxjive1m','BMfTzui','CgfKu3rHCNq','z2v0rwXLBwvUDej5swq','C2vSzwn0zwq','44k344oZ44kS44oD44o844oR','y2L0Eq','44kQ44o844kV44oP44oZ44oj','BwLUDxrL','5Rw35Asw77YA44oO44o844oT44od44or','44oE44ol44oP','y3jLzgL0vgv4Da','44k144oZ44og44kJ44kI44k0','44oB44oo44oR44oR','6yg45OQE5lIT','BwLU','5Rw35Asw77YA5lIT5P2X','542f5A2q5BQN','BM9Uzq','44oH44kT44k344kZ44k344og44kJ','44k344kR44k0','zgLZCgXHEq','zgf5','z2v0vvrdu2vJB25KCW','44oG44oZ44oq44kK','44oh44oQ44o8','55U45OMl44gU5Rcx5OYb44gH44gR5A+e44kk5RE744gg44cb5yYf44g/6l6844ka44ki44gg44gQ5OsB5Oof6kgO54++44ks44gz44kl5yk+5zcr44gm44gc44kk44g+44gz44cc44oT44oE44oZ44ob44od44kV44gQ6zUW5zUY5Rcx44ke44cb5B+d44gm5RQ244gr5zci44gg44ki44gg44gQ5lIa5l2t5OsF44gR5Oo544gl44km44kl44k/44kK44ox44gl44kc44gx44km44g+44gB44kt44cc5ysQ44gx44gv44ks5RoO44go5zci44gi44kl6zAI5l+c44gU5lIT44gN44cb5OsB44gm6ikY44gJ44gM44ge44gn44gD44gg44gN44gz44cc','44oO44op44on44k544ow44oR44kW','54MH54MB5BQN','y2HVAwnLqG','5Ogl44gV6AEg44gr5BYv44gn44ki44kk44g+44gJ44gz44gq44gR44cc5Aw944gn44gG44gO5OcD44gJ44gF44kj44gz44gq6kgm5yUv44gx44gF44gp44gQ44kl5yk+5zcr44gm44gc44kk44g+44gz44cc6l+944ge44gl44gr44kj44km44kl44ki44kk44cb6iEQ5yIg44gl44kj5Rcx5OYb44gH44ks5lYD44gi44gM44ge44kl44gO44gn44gU44g744gg44gm54Ed44gi44kl44k/44kK44ox44gl44kc44gx44km44g+44gB44kt44cc','44oE44oj44oQ44o844oj','zMLUywXqAwnR','44oC44k044k/','44kR44kK44oT','6BM/5ywq5Bo2','C2LUz2XLvgv4Da','lMnOB29Zzq','5y+l5Oof44gR6l+r44ge44cb5A++562j44gQ6zAI5l+c5OcN44gR5Oo544gl44km44kl5yk+5zcr44gm44gc44kk44g+44gz44cc5Rg644g+44kk44gn44gJ44gF5B2I44gR44gO44kj44kp44km44gQ44ge44cb6iEQ55sX44gQ5OsB44gU44gl44gF44gH44ks5Rgc44kb44kl44k/44kK44ox44gl44kc44gx44km44g+44gB44kt44cc5l6H5ycK6kAZ44ks5Bck6yEn44gx5zci44gi44kl55U45OMl44gO44cb56Mp44ke44gl44gR5Oo544gl44km5zci44gJ44gM44ge44gn44gD44gg44gN44gz44cc','y2HVAwnLqq','EwvHCG','5Rw35Asw77YA44kI44ov44oQ44kR','mZm3mdvstLzQCKK','zM9YrwfJAa','44oT44o844oE','zhn0uM93','5A6h6yo95A6U','yxrHBJi','6kQG5A6F44gv44ke56Mn44g/6yEn44gT44gM44gn44gF5l+H6Ac844gU5lIk44gR44cb5OsB44ks56+j44ge44gM44ge44gp5yk+5zcr44gm44gc44kk44g+44gz44cc5Rs+5OMl44gQ6kIa6jgj44ki44kk44cb6zw344gp5PsV44gi5zci44gi44kl6zAI5l+c44ks5AsN5yIh44gR44gz44kl44k/44kK44ox44gl44kc44gx44km44g+44gB44kt44cc5PMc6zAt44ks44gl44gr44gM44gy44gJ44gp44kk5OsB5Oof44ks5REX44kb44gM44ge44gn44gD44gg44gN44gz44cc','DgLTzxDYyxa','mtiYnwLsAwvcBq','44k444oJ44kR44oR44k/','yMXVy2S','C2nYB2XSsw50B1zPzxC','44ow44kO44oo44k544kI44kK44oS44k5','Bw9UDgG','pc9VChrPB24+','Dgv4DenVBNrLBNq','5Rw35Asw77YA5P2X5y2x44o75y2x44kI44k444kI','C2LUz2XLtMfTzq','5lIa5BQM5Aw944gn44gR44gQ44kl44gO44cb5REX44gp5lIa6ycu44gR5OoZ44gg5yk+5zcr44gm44gc44kk44g+44gz44cc6kgO6z2I55Qe44gQ5lUy44gn5zci44ge44ki44kk44cb5B+d44gU5AwL44g+44gN6ycA44gy5zci44gi44kl6zAI5l+c44ks5Rgc44kb44kl44k/44kK44ox44gl44kc44gx44km44g+44gB44kt44cc5l+H6Ac844gN44gn44kl55U45OMl44gR44gV44cb44gO44gt44gO44kt5Bc944gp44gx44gM44ge44gn44gD44gg44gN44gz44cc','44k144oZ44or44kM44oT','mZeXmJmYnKnrufLntW','44oH44oR44oC44oR44oZ','44ol44oL44o844oO44o844kV','5AsP56EK5BQN','CxvLCNLtzwXLy3rVCKfSBa'];a=function(){return U;};return a();}function diagnoseRange(c,d,e,f){const M=y,g=Date[M(0x11f)](c,d-0x1,e,0x0,0x0,0x0)-f*0xe10*0x3e8,h=g+0x18*0xe10*0x3e8,i=utPartsFromMs(g),j=utPartsFromMs(h),k=venusEclipticLongitude(i['y'],i['m'],i[M(0x176)],i[M(0x144)]),l=venusEclipticLongitude(j['y'],j['m'],j[M(0x176)],j[M(0x144)]);return{'idx1':signIndex(k),'idx2':signIndex(l)};}function diagnoseExact(c,d,e,f,g,h){const N=y,i=Date[N(0x11f)](c,d-0x1,e,f,g,0x0)-h*0xe10*0x3e8,j=utPartsFromMs(i),k=venusEclipticLongitude(j['y'],j['m'],j[N(0x176)],j[N(0x144)]),l=signIndex(k);return{'idx1':l,'idx2':l};}document[y(0x163)](y(0x106))[y(0x10e)](y(0x10d),function(){const O=y,c=+document[O(0x163)](O(0x188))[O(0x136)],d=+document[O(0x163)](O(0x197))[O(0x136)],e=+document[O(0x163)](O(0x176))[O(0x136)],f=document[O(0x163)](O(0x166))[O(0x136)],g=CITIES[f],h=g!==undefined?g['tz']:0x9,i=g&&g[O(0x149)]&&document[O(0x163)](O(0x133))[O(0x10a)],j=h+(i?0x1:0x0),k=document[O(0x163)](O(0x112))[O(0x10a)];let l,n;if(k)({idx1:l,idx2:n}=diagnoseRange(c,d,e,j));else{const r=+document[O(0x163)](O(0x110))[O(0x136)],s=+document[O(0x163)](O(0x168))[O(0x136)];({idx1:l,idx2:n}=diagnoseExact(c,d,e,r,s,j));}const o=document[O(0x163)](O(0x130)),p=document[O(0x163)](O(0x15c)),q=document[O(0x163)](O(0x129));o[O(0x115)][O(0x175)]=O(0x194);if(l===n){p[O(0x115)][O(0x175)]=O(0x194),q[O(0x115)][O(0x175)]=O(0x172);const t=SIGNS[l];document[O(0x163)](O(0x19b))[O(0x199)]=t,document[O(0x163)](O(0x184))[O(0x199)]=TEXTS[t];}else{p[O(0x115)][O(0x175)]=O(0x172),q[O(0x115)][O(0x175)]=O(0x194),document[O(0x163)](O(0x180))[O(0x115)][O(0x175)]=O(0x172);const u=SIGNS[l],v=SIGNS[n];document[O(0x163)](O(0x111))[O(0x199)]=u,document[O(0x163)](O(0x13e))[O(0x199)]=TEXTS[u],document[O(0x163)](O(0x161))[O(0x199)]=v,document[O(0x163)](O(0x138))[O(0x199)]=TEXTS[v],document[O(0x163)](O(0x187))[O(0x127)][O(0x11b)](O(0x164)),document[O(0x163)](O(0x17d))[O(0x127)][O(0x11b)](O(0x164)),document[O(0x1a2)](O(0x185))[O(0x18b)](w=>{const P=O;w[P(0x127)][P(0x11b)](P(0x142)),w[P(0x199)]=P(0x124);});}o[O(0x195)]({'behavior':O(0x107),'block':O(0x128)});}),document[y(0x1a2)](y(0x185))[y(0x18b)](c=>{const Q=y;c[Q(0x10e)](Q(0x10d),function(){const R=Q,d=this[R(0x103)](R(0x123)),e=d==='A'?document[R(0x163)](R(0x111))[R(0x199)]:document[R(0x163)](R(0x161))[R(0x199)];document[R(0x163)](R(0x187))[R(0x127)][R(0x154)](R(0x164),d==='A'),document[R(0x163)](R(0x17d))[R(0x127)][R(0x154)](R(0x164),d==='B'),document[R(0x1a2)](R(0x185))[R(0x18b)](g=>{const S=R;g[S(0x127)][S(0x11b)](S(0x142)),g[S(0x199)]=S(0x124);}),this[R(0x127)][R(0x15b)](R(0x142)),this[R(0x199)]=R(0x16e);const f=document[R(0x163)](R(0x180));f[R(0x115)][R(0x175)]=R(0x194),document[R(0x163)](R(0x126))[R(0x199)]=e;});}),(function(){const T=y,c=[0x30b7,0x30b9,0x30c6,0x30e0,0x5236,0x4f5c,0xff1a,0x6d,0x69,0x6b,0x61,0x6e];document[T(0x163)](T(0x16b))[T(0x199)]=String[T(0x134)](...c);}());</script>
+</body>
+</html>
